@@ -122,7 +122,6 @@ func main() {
 	})
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
-	fmt.Println(addr)
 	server := http.Server{
 		Addr:    addr,
 		Handler: router,
