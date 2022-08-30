@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"wildberries_traineeship/internal/cache"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -97,7 +98,7 @@ func main() {
 
 	router.Group(func(router chi.Router) {
 		//router.Use(cacheMiddleware)
-		registerHandler(router, &handler.OrderHandler{Service: service})
+		registerHandler(router, &handler.OrderHandler{Service: service, Cache: cache.InitializeMemoryCache()})
 	})
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
