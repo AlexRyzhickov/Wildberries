@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	"wildberries_traineeship/internal/models"
+	"wildberries_traineeship/internal/utils"
 )
 
 type Service struct {
@@ -27,12 +28,7 @@ func (s Service) GetOrderInfo(ctx context.Context, id string) (*models.OrderData
 	if err != nil {
 		return nil, err
 	}
-	orderData := models.OrderData{}
-	err = order.OrderData.AssignTo(&orderData)
-	if err != nil {
-		return nil, err
-	}
-	return &orderData, nil
+	return utils.ExtractOrderData(order)
 }
 
 type NoOrderInfo struct {

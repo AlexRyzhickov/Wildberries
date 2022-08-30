@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 	"wildberries_traineeship/internal/cache"
+	"wildberries_traineeship/internal/models"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,6 +22,7 @@ import (
 	"wildberries_traineeship/internal/handler"
 	"wildberries_traineeship/internal/service"
 	"wildberries_traineeship/internal/subscribe"
+	"wildberries_traineeship/internal/utils"
 )
 
 func connectDB(cfg *config.Config) (*gorm.DB, error) {
@@ -60,6 +62,20 @@ func connectionsClosedForServer(server *http.Server) chan struct{} {
 	return connectionsClosed
 }
 
+func fillCacheFromDatabase(m *cache.MemoryCache, db *gorm.DB) error {
+	var orders []models.Order
+	err := db.Find(&orders).Error
+	if err != nil {
+		return err
+	}
+	for _, order := range orders {
+		if orderData, err := utils.ExtractOrderData(order); err == nil {
+			m.Set(order.Id, *orderData, 30*time.Minute)
+		}
+	}
+	return nil
+}
+
 func main() {
 	cfg, err := config.New()
 	if err != nil {
@@ -88,7 +104,12 @@ func main() {
 		log.Fatal("failed to subscribe", err)
 	}
 
-	service := service.NewService(db)
+	c := cache.InitializeMemoryCache()
+	if err = fillCacheFromDatabase(c, db); err != nil {
+		log.Fatal(err)
+	}
+
+	s := service.NewService(db)
 
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
@@ -97,8 +118,7 @@ func main() {
 	router.Use(cors.AllowAll().Handler)
 
 	router.Group(func(router chi.Router) {
-		//router.Use(cacheMiddleware)
-		registerHandler(router, &handler.OrderHandler{Service: service, Cache: cache.InitializeMemoryCache()})
+		registerHandler(router, &handler.OrderHandler{Service: s, Cache: c})
 	})
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
