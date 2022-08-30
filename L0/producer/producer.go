@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -12,20 +13,20 @@ import (
 	"wildberries_traineeship/internal/models"
 )
 
-func setUuid(order models.OrderData) ([]byte, error) {
+func setUuid(order models.OrderData) ([]byte, string, error) {
 	order.OrderUid = uuid.New().String()
 
 	bytes, err := json.Marshal(order)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return bytes, nil
+	return bytes, order.OrderUid, nil
 }
 
 func main() {
 	order := models.OrderData{}
-	fileBytes, _ := os.ReadFile("./model.json")
+	fileBytes, _ := os.ReadFile(os.Getenv("FILE_PATH"))
 	err := json.Unmarshal(fileBytes, &order)
 
 	if err != nil {
@@ -36,11 +37,12 @@ func main() {
 	defer nc.Close()
 
 	for {
-		bytes, err := setUuid(order)
+		bytes, uid, err := setUuid(order)
 		if err != nil {
 			continue
 		}
-		nc.Publish("foo", bytes)
+		nc.Publish(os.Getenv("SUBJ"), bytes)
+		fmt.Println("Publish msg with uid", uid)
 		time.Sleep(2 * time.Second)
 	}
 }

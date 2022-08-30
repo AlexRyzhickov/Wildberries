@@ -1,3 +1,7 @@
+.PHONY: run-nats-streaming-producer
+run-nats-streaming-producer:
+	@export FILE_PATH=./producer/model.json && export SUBJ=foo && go run ./producer/producer.go
+
 .PHONY: docker-build-generator
 docker-build-generator:
 	@docker build -t generator -f Dockerfile.generator .
