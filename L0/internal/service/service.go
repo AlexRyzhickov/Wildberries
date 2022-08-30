@@ -18,9 +18,34 @@ func NewService(db *gorm.DB) *Service {
 	}
 }
 
-func (s Service) GetOrderInfo(ctx context.Context, ticker string) (*models.Order, error) {
+func (s Service) GetOrderInfo(ctx context.Context, ticker string) (*models.OrderData, error) {
+	order := models.Order{
+		Id: "b563feb7b2b84b6test",
+	}
 
-	return &models.Order{Id: 123}, nil
+	//result := map[string]interface{}{}
+	s.db.Model(&models.Order{}).First(&order)
+
+	order2 := models.OrderData{}
+
+	err := order.OrderData.AssignTo(&order2)
+	if err != nil {
+		fmt.Println("!!!!!!!!!!!!!!!")
+		//t.Fatal(err)
+	}
+
+	//result := map[string]interface{}{}
+	//s.db.Table("orders").First(&result)
+
+	fmt.Println("hi", order.Id, order2)
+
+	//err := s.db.Find(order).Error
+	//
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	return &order2, nil
 }
 
 type NoOrderInfo struct {

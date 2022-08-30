@@ -3,26 +3,11 @@ package models
 import "github.com/jackc/pgtype"
 
 type Order struct {
-	Id     int
-	Order2 pgtype.JSONB `gorm:"column:info"`
+	Id        string
+	OrderData pgtype.JSONB
 }
 
-//
-//type JSONB map[string]interface{}
-//
-//func (j JSONB) Value() (driver.Value, error) {
-//	valueString, err := json.Marshal(j)
-//	return string(valueString), err
-//}
-//
-//func (j *JSONB) Scan(value interface{}) error {
-//	if err := json.Unmarshal(value.([]byte), &j); err != nil {
-//		return err
-//	}
-//	return nil
-//}
-
-type Order2 struct {
+type OrderData struct {
 	OrderUid          string   `json:"order_uid,omitempty"`
 	TrackNumber       string   `json:"track_number,omitempty"`
 	Entry             string   `json:"entry,omitempty"`

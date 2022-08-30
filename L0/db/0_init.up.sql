@@ -1,4 +1,4 @@
 CREATE TABLE orders (
-    id   INT PRIMARY KEY,
-    info JSONB NOT NULL
+    id   VARCHAR(36) PRIMARY KEY,
+    order_data JSONB NOT NULL
 );
