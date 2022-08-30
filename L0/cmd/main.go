@@ -1,25 +1,25 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"github.com/nats-io/nats.go"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-	"wildberries_traineeship/internal/config"
-	"wildberries_traineeship/internal/handler"
-	"wildberries_traineeship/internal/models"
-	"wildberries_traineeship/internal/service"
 
-	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/nats-io/nats.go"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
+	"wildberries_traineeship/internal/config"
+	"wildberries_traineeship/internal/handler"
+	"wildberries_traineeship/internal/service"
+	"wildberries_traineeship/internal/subscribe"
 )
 
 func connectDB(cfg *config.Config) (*gorm.DB, error) {
@@ -77,39 +77,10 @@ func main() {
 	defer nc.Close()
 
 	_, err = nc.Subscribe("foo", func(m *nats.Msg) {
-
-		order := models.OrderData{}
-		err := json.Unmarshal(m.Data, &order)
-		if err != nil {
-			log.Println("Unmarshal data from nats-streaming error", err)
+		log.Printf("Received a message: %s\n", string(m.Data))
+		if err := subscribe.ProcessOrder(db, m); err != nil {
+			log.Println(err)
 		}
-		data := models.Order{
-			Id: order.OrderUid,
-		}
-
-		var inInterface map[string]interface{}
-		inrec, _ := json.Marshal(order)
-		err = json.Unmarshal(inrec, &inInterface)
-
-		if err != nil {
-			log.Println("Marshal data from nats-streaming error", err)
-		}
-
-		fmt.Println(inInterface)
-
-		err = data.OrderData.Set(inInterface)
-		if err != nil {
-			log.Println("Q", err)
-			return
-		}
-
-		err = db.FirstOrCreate(&data).Error
-
-		if err != nil {
-			log.Println("Q2", err)
-			return
-		}
-
 	})
 
 	if err != nil {
@@ -129,9 +100,10 @@ func main() {
 		registerHandler(router, &handler.OrderHandler{Service: service})
 	})
 
-	addr := fmt.Sprintf(":%d", cfg.Port)
+	addr := fmt.Sprintf(":%s", cfg.Port)
+	fmt.Println(addr)
 	server := http.Server{
-		Addr:    ":8080",
+		Addr:    addr,
 		Handler: router,
 	}
 

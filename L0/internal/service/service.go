@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	_ "github.com/nats-io/nats.go"
+
 	"gorm.io/gorm"
+
 	"wildberries_traineeship/internal/models"
 )
 
@@ -18,34 +19,20 @@ func NewService(db *gorm.DB) *Service {
 	}
 }
 
-func (s Service) GetOrderInfo(ctx context.Context, ticker string) (*models.OrderData, error) {
+func (s Service) GetOrderInfo(ctx context.Context, id string) (*models.OrderData, error) {
 	order := models.Order{
-		Id: "b563feb7b2b84b6test",
+		Id: id,
 	}
-
-	//result := map[string]interface{}{}
-	s.db.Model(&models.Order{}).First(&order)
-
-	order2 := models.OrderData{}
-
-	err := order.OrderData.AssignTo(&order2)
+	err := s.db.Model(&models.Order{}).First(&order).Error
 	if err != nil {
-		fmt.Println("!!!!!!!!!!!!!!!")
-		//t.Fatal(err)
+		return nil, err
 	}
-
-	//result := map[string]interface{}{}
-	//s.db.Table("orders").First(&result)
-
-	fmt.Println("hi", order.Id, order2)
-
-	//err := s.db.Find(order).Error
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
-
-	return &order2, nil
+	orderData := models.OrderData{}
+	err = order.OrderData.AssignTo(&orderData)
+	if err != nil {
+		return nil, err
+	}
+	return &orderData, nil
 }
 
 type NoOrderInfo struct {

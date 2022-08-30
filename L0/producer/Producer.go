@@ -2,24 +2,18 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/google/uuid"
-	"github.com/nats-io/nats.go"
 	"log"
 	"os"
-	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/nats-io/nats.go"
+
 	"wildberries_traineeship/internal/models"
 )
 
-func genUuid() string {
-	uuidWithHyphen := uuid.New()
-	fmt.Println(uuidWithHyphen)
-	return strings.Replace(uuidWithHyphen.String(), "-", "", -1)
-}
-
 func setUuid(order models.OrderData) ([]byte, error) {
-	order.OrderUid = genUuid()
+	order.OrderUid = uuid.New().String()
 
 	bytes, err := json.Marshal(order)
 	if err != nil {

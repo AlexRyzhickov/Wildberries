@@ -20,13 +20,13 @@ func (h *OrderHandler) Method() string {
 }
 
 func (h *OrderHandler) Path() string {
-	return "/stock/{ticker}"
+	return "/order/{id}"
 }
 
 func (h *OrderHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ticker := chi.URLParam(r, "ticker")
+	id := chi.URLParam(r, "id")
 
-	order, err := h.Service.GetOrderInfo(r.Context(), ticker)
+	order, err := h.Service.GetOrderInfo(r.Context(), id)
 
 	if err != nil {
 		writeResponse(w, r, err)
@@ -34,27 +34,4 @@ func (h *OrderHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeResponse(w, r, order)
-
-	//if err != nil {
-	//	if nsi := (service.NoOrderInfo{}); errors.As(err, &nsi) {
-	//		writeResponse(w, r, badRequest{nsi.Error()})
-	//		return
-	//	}
-	//	writeResponse(w, r, err)
-	//	return
-	//}
-	//
-	//var resp interface{} = stock
-	//if fields := r.FormValue("fields"); fields != "" {
-	//	// Using reflection to leave in the response only requested fields
-	//
-	//	m := make(map[string]interface{})
-	//	rv := reflect.ValueOf(*stock)
-	//	for _, field := range strings.Split(fields, ",") {
-	//		m[field] = rv.FieldByName(field).Interface()
-	//	}
-	//	resp = m
-	//}
-	//
-	//writeResponse(w, r, resp)
 }
