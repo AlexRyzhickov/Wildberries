@@ -1,0 +1,57 @@
+.canvas {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    background: black;
+    border-left: 1px solid #D1E8F0;
+    border-bottom: 1px solid #D1E8F0;
+    border-right: 1px solid #D1E8F0;
+}
+
+.scores{
+    font-size: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    color: #D1E8F0;;
+}
+
+.playButton{
+    display: flex;
+    justify-content: center;
+    margin: 10px auto;
+}
+
+a.glo{
+    color: #D1E8F0;;
+    padding: 10px 20px;
+    width:100px;
+    text-decoration:none;
+    text-align:center;
+    margin:20px auto;
+    display: block;
+    background-image: linear-gradient(to left,transparent,transparent 50%,#D1E8F0 50%,#D1E8F0);
+    background-position: 100% 0;
+    background-size: 200% 100%;
+    transition: all .25s ease-in;
+    font: 400 18px tahoma;
+    border: 1px solid #D1E8F0;
+}
+a.glo:hover {
+    background-position: 0 0;
+    color:#fff;
+}
+
+.name{
+    font-size: 17px;
+    display: flex;
+    justify-content: center;
+    margin: 10px auto;
+    border: 1px solid #cecece;
+    background: #D1E8F0;
+    border-radius: 8px;
+    padding: 6px 0 4px 10px;
+}
+body{
+    background: black;
+}
