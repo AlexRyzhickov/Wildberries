@@ -38,3 +38,12 @@ type NoOrderInfo struct {
 func (err NoOrderInfo) Error() string {
 	return fmt.Sprintf("No info about the stock with ticker %v", err.ticker)
 }
+
+func (s Service) GetOrderList(ctx context.Context) (*[]string, error) {
+	var ordersIdList []string
+	err := s.db.Model(&models.Order{}).Select("id").Find(&ordersIdList).Error
+	if err != nil {
+		return nil, err
+	}
+	return &ordersIdList, nil
+}

@@ -119,6 +119,7 @@ func main() {
 
 	router.Group(func(router chi.Router) {
 		registerHandler(router, &handler.OrderHandler{Service: s, Cache: c})
+		registerHandler(router, &handler.OrderListHandler{Service: s})
 	})
 
 	addr := fmt.Sprintf(":%s", cfg.Port)

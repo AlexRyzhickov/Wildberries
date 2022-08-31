@@ -1,7 +1,11 @@
 ## SET YOUR UUID AFTER ./order/...
 
-###
-GET http://127.0.0.1:8080/order/813f8a2e-7b4f-49ea-a6e3-e9a6f17a07f3
+GET http://127.0.0.1:8080/order/216b9b32-fc8a-49d6-bab2-29ca68b56dcd
 
 ###
-GET http://127.0.0.1:8080/order/9784bbb2-b0ee-47dd-bcef-b5af1c75876a
+
+GET http://127.0.0.1:8080/order/9784bbb2-b0ee-47dd-bcef-b5af1c758762
+
+###
+
+GET http://127.0.0.1:8080/orders
