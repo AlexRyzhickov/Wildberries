@@ -1,29 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
-func binarySearch(a []int, key int) int {
-	l := -1
-	r := len(a)
-	for l < r-1 {
-		m := (l + r) / 2
-		if a[m] < key {
-			l = m
-		} else {
-			r = m
+func quicksort(slice []int) []int {
+	if len(slice) < 2 {
+		return slice
+	}
+	left, right := 0, len(slice)-1
+	pivot := rand.Int() % len(slice)
+	slice[pivot], slice[right] = slice[right], slice[pivot]
+	for i, _ := range slice {
+		if slice[i] < slice[right] {
+			slice[left], slice[i] = slice[i], slice[left]
+			left++
 		}
 	}
-	if a[r] != key {
-		return -1
-	}
-	return r
+	slice[left], slice[right] = slice[right], slice[left]
+	quicksort(slice[:left])
+	quicksort(slice[left+1:])
+	return slice
 }
 
 func main() {
-	items := []int{1, 2, 9, 20, 31, 45, 63, 70, 100}
-	if v := binarySearch(items, 20); v != -1 {
-		fmt.Println("Element found, position", v)
-	} else {
-		fmt.Println("Element not found")
-	}
+	slice := []int{-25, -27, 32, -41, 15, 13, 19, 15, 24, -21.0}
+	fmt.Println(quicksort(slice))
 }
