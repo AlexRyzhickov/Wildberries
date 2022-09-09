@@ -1,28 +1,33 @@
 package main
 
-import "fmt"
-
-type Set struct {
-	m map[string]struct{}
-}
-
-func InitializeSet() *Set {
-	m := make(map[string]struct{})
-	m["cat"] = struct{}{}
-	m["dog"] = struct{}{}
-	m["tree"] = struct{}{}
-	return &Set{m: m}
-}
-
-func (s *Set) IsInSet(key string) bool {
-	_, ok := s.m[key]
-	return ok
-}
+import (
+	"fmt"
+	"reflect"
+)
 
 func main() {
-	set := InitializeSet()
-	fmt.Println(set.IsInSet("cat"))
-	fmt.Println(set.IsInSet("dog"))
-	fmt.Println(set.IsInSet("tree"))
-	fmt.Println(set.IsInSet("world"))
+	var i interface{}
+
+	i = 1
+	//i = true
+	//i = make(chan int)
+
+	//1. Method to determine the type
+	t := reflect.TypeOf(i)
+	fmt.Println(t)
+
+	//2. Method to determine the type
+	switch i.(type) {
+	case int:
+		fmt.Println("int")
+	case bool:
+		fmt.Println("bool")
+	case chan int:
+		fmt.Println("chan int")
+	default:
+		fmt.Println("unknown type")
+	}
+
+	//3. Method to determine the type
+	fmt.Println(fmt.Sprintf("%T", i))
 }
