@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/exp/constraints"
 	"math/rand"
 )
 
-func quicksort(slice []int) []int {
+type Number interface {
+	constraints.Integer | constraints.Float
+}
+
+func quicksort[T Number](slice []T) []T {
 	if len(slice) < 2 {
 		return slice
 	}

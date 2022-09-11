@@ -1,8 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"golang.org/x/exp/constraints"
+)
 
-func binarySearch(a []int, key int) int {
+type Number interface {
+	constraints.Integer | constraints.Float
+}
+
+func binarySearch[T Number](a []T, key T) int {
 	l := -1
 	r := len(a)
 	for l < r-1 {
