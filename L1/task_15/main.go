@@ -1,30 +1,32 @@
 package main
 
-import (
-	"fmt"
-	"math/rand"
-)
+//Проблемой указаного ниже кода является то,
+//что создаётся строка большого размера 1 << 10 и при
+//этом берутся только первые 100 символов, при этом все элементы
+//строки от [100 : 1023] остаются в памяти после нарезки и не используются.
 
-func quicksort(slice []int) []int {
-	if len(slice) < 2 {
-		return slice
-	}
-	left, right := 0, len(slice)-1
-	pivot := rand.Int() % len(slice)
-	slice[pivot], slice[right] = slice[right], slice[pivot]
-	for i, _ := range slice {
-		if slice[i] < slice[right] {
-			slice[left], slice[i] = slice[i], slice[left]
-			left++
-		}
-	}
-	slice[left], slice[right] = slice[right], slice[left]
-	quicksort(slice[:left])
-	quicksort(slice[left+1:])
-	return slice
+/*
+var justString string
+func someFunc() {
+	v := createHugeString(1 << 10)
+	justString = v[:100]
 }
 
 func main() {
-	slice := []int{-25, -27, 32, -41, 15, 13, 19, 15, 24, -21.0}
-	fmt.Println(quicksort(slice))
+	someFunc()
+}*/
+
+//Правильным подходом является использование функции Clone (аналог copy)
+
+/*
+import "strings"
+
+var justString string
+func someFunc() {
+	v := createHugeString(1 << 10)
+	justString = strings.Clone(v[:100])
 }
+
+func main() {
+	someFunc()
+}*/
