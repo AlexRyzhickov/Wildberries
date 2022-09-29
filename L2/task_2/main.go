@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"unicode"
 )
@@ -43,6 +44,6 @@ func unpackString(str string) string {
 }
 
 func main() {
-	unpackString("a1b5c2d5e11")
-	unpackString("a1b5c2d5e")
+	fmt.Println(unpackString("a1b5c2d5e11"))
+	fmt.Println(unpackString("a1b5c2d5e"))
 }
