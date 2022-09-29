@@ -43,16 +43,6 @@ func unpackString(str string) string {
 }
 
 func main() {
-	//	//unpackString("я4яcяd5e")
-	//	//unpackString("a2d3b4")
 	unpackString("a1b5c2d5e11")
 	unpackString("a1b5c2d5e")
-	unpackString("")
-	unpackString("a4")
-	unpackString("4a")
-	unpackString("45")
-
-	//	//unpackString("abcd")
-	//	unpackString("")
-	//
 }
