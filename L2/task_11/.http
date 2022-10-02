@@ -1,0 +1,43 @@
+### "date" "year-month-day"
+
+POST http://127.0.0.1:8080/create_event
+
+{
+    "user_id": 1,
+    "event_id": 5,
+    "date": "2022-10-03",
+    "event": "Alex's Happy Birthday !"
+}
+
+###
+
+POST http://127.0.0.1:8080/update_event
+
+{
+    "user_id": 1,
+    "event_id": 5,
+    "date": "2022-10-09",
+    "event": "Mila's Happy Birthday !"
+}
+
+###
+
+POST http://127.0.0.1:8080/delete_event
+
+{
+    "user_id": 1,
+    "event_id": 5
+}
+
+###
+
+GET http://127.0.0.1:8080/events_for_day?user_id=1
+
+###
+
+GET http://127.0.0.1:8080/events_for_week?user_id=1
+
+###
+
+GET http://127.0.0.1:8080/events_for_month?user_id=1
+
