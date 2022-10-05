@@ -21,23 +21,23 @@ const (
 	CommandQuit = "quit"
 )
 
-func cd(args []string) ([]byte, error) {
+func cd(args []string) (string, error) {
 	dir := args[0]
 	err := os.Chdir(dir)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	dir, err = os.Getwd()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return []byte(dir), nil
+	return dir, nil
 }
 
-func ls() ([]byte, error) {
+func ls() (string, error) {
 	files, err := os.ReadDir(".")
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	s := strings.Builder{}
 	for i, f := range files {
@@ -46,36 +46,37 @@ func ls() ([]byte, error) {
 			s.WriteString("\n")
 		}
 	}
-	return []byte(s.String()), nil
+	return s.String(), nil
 }
 
-func pwd() ([]byte, error) {
-	res, err := os.Getwd()
-	return []byte(res), err
+func pwd() (string, error) {
+	return os.Getwd()
 }
 
-func echo(args []string) ([]byte, error) {
-	return exec.Command(CommandEcho, args...).Output()
+func echo(args []string) (string, error) {
+	res, err := exec.Command(CommandEcho, args...).Output()
+	return string(res), err
 }
 
-func kill(pid int) ([]byte, error) {
+func kill(pid int) (string, error) {
 	process, err := os.FindProcess(pid)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	err = process.Kill()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return []byte("process killed"), nil
+	return "process killed", nil
 }
 
-func ps() ([]byte, error) {
-	return exec.Command(CommandPs).Output()
+func ps() (string, error) {
+	res, err := exec.Command(CommandPs).Output()
+	return string(res), err
 }
 
 func run(str string) bool {
-	var res []byte
+	var res string
 	var err error
 	args, argsWithSpaces := args(str)
 	if !(len(args) > 0) {
@@ -114,8 +115,8 @@ func run(str string) bool {
 	if err != nil {
 		log.Println(err)
 	} else {
-		if res != nil {
-			fmt.Println(string(res))
+		if len(res) > 0 {
+			fmt.Println(res)
 		}
 	}
 	return false
