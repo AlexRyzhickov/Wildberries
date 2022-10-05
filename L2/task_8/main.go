@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/fatih/color"
 	"log"
 	"os"
 	"os/exec"
@@ -12,6 +13,7 @@ import (
 
 const (
 	CommandCd   = "cd"
+	CommandLs   = "ls"
 	CommandPwd  = "pwd"
 	CommandEcho = "echo"
 	CommandKill = "kill"
@@ -19,46 +21,62 @@ const (
 	CommandQuit = "quit"
 )
 
-func cd(args []string) ([]byte, error) {
+func cd(args []string) (string, error) {
 	dir := args[0]
 	err := os.Chdir(dir)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	dir, err = os.Getwd()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return []byte(dir), nil
+	return dir, nil
 }
 
-func pwd() ([]byte, error) {
-	res, err := os.Getwd()
-	return []byte(res), err
+func ls() (string, error) {
+	files, err := os.ReadDir(".")
+	if err != nil {
+		return "", err
+	}
+	s := strings.Builder{}
+	for i, f := range files {
+		s.WriteString(f.Name())
+		if i < len(files)-1 {
+			s.WriteString("\n")
+		}
+	}
+	return s.String(), nil
 }
 
-func echo(args []string) ([]byte, error) {
-	return exec.Command(CommandEcho, args...).Output()
+func pwd() (string, error) {
+	return os.Getwd()
 }
 
-func kill(pid int) ([]byte, error) {
+func echo(args []string) (string, error) {
+	res, err := exec.Command(CommandEcho, args...).Output()
+	return string(res), err
+}
+
+func kill(pid int) (string, error) {
 	process, err := os.FindProcess(pid)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	err = process.Kill()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return []byte("process killed"), nil
+	return "process killed", nil
 }
 
-func ps() ([]byte, error) {
-	return exec.Command(CommandPs).Output()
+func ps() (string, error) {
+	res, err := exec.Command(CommandPs).Output()
+	return string(res), err
 }
 
 func run(str string) bool {
-	var res []byte
+	var res string
 	var err error
 	args, argsWithSpaces := args(str)
 	if !(len(args) > 0) {
@@ -70,6 +88,8 @@ func run(str string) bool {
 		if len(args) >= 2 {
 			res, err = cd(args[1:])
 		}
+	case CommandLs:
+		res, err = ls()
 	case CommandPwd:
 		res, err = pwd()
 	case CommandEcho:
@@ -95,8 +115,8 @@ func run(str string) bool {
 	if err != nil {
 		log.Println(err)
 	} else {
-		if res != nil {
-			fmt.Println(string(res))
+		if len(res) > 0 {
+			fmt.Println(res)
 		}
 	}
 	return false
@@ -118,13 +138,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	green := color.New(color.FgGreen).SprintfFunc()
 	hostname += ":~$ "
 	sc := bufio.NewScanner(os.Stdin)
-	fmt.Print(hostname)
+	fmt.Printf("%s", green(hostname))
 	for sc.Scan() {
 		if isExit := run(sc.Text()); isExit {
 			break
 		}
-		fmt.Print(hostname)
+		fmt.Printf("%s", green(hostname))
 	}
 }
