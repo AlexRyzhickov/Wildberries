@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/fatih/color"
 	"log"
 	"os"
 	"os/exec"
@@ -12,6 +13,7 @@ import (
 
 const (
 	CommandCd   = "cd"
+	CommandLs   = "ls"
 	CommandPwd  = "pwd"
 	CommandEcho = "echo"
 	CommandKill = "kill"
@@ -30,6 +32,21 @@ func cd(args []string) ([]byte, error) {
 		return nil, err
 	}
 	return []byte(dir), nil
+}
+
+func ls() ([]byte, error) {
+	files, err := os.ReadDir(".")
+	if err != nil {
+		return nil, err
+	}
+	s := strings.Builder{}
+	for i, f := range files {
+		s.WriteString(f.Name())
+		if i < len(files)-1 {
+			s.WriteString("\n")
+		}
+	}
+	return []byte(s.String()), nil
 }
 
 func pwd() ([]byte, error) {
@@ -70,6 +87,8 @@ func run(str string) bool {
 		if len(args) >= 2 {
 			res, err = cd(args[1:])
 		}
+	case CommandLs:
+		res, err = ls()
 	case CommandPwd:
 		res, err = pwd()
 	case CommandEcho:
@@ -118,13 +137,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	green := color.New(color.FgGreen).SprintfFunc()
 	hostname += ":~$ "
 	sc := bufio.NewScanner(os.Stdin)
-	fmt.Print(hostname)
+	fmt.Printf("%s", green(hostname))
 	for sc.Scan() {
 		if isExit := run(sc.Text()); isExit {
 			break
 		}
-		fmt.Print(hostname)
+		fmt.Printf("%s", green(hostname))
 	}
 }
